@@ -1,25 +1,25 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: virtual-customer
+  name: virtual-worker
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: virtual-customer
+      app: virtual-worker
   template:
     metadata:
       labels:
-        app: virtual-customer
+        app: virtual-worker
     spec:
       nodeSelector:
         "kubernetes.io/os": linux
       containers:
-      - name: virtual-customer
-        image: ghcr.io/azure-samples/aks-store-demo/virtual-customer:latest
+      - name: virtual-worker
+        image: ghcr.io/pauldotyu/aks-store-demo/virtual-worker:latest
         env:
-        - name: ORDER_SERVICE_URL
-          value: http://order-service:3000/
+        - name: MAKELINE_SERVICE_URL
+          value: http://makeline-service:3001
         - name: ORDERS_PER_HOUR
           value: "100"
         resources:
