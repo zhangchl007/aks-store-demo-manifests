@@ -44,9 +44,41 @@ kind: Service
 metadata:
   name: store-front
 spec:
+  type: ClusterIP
   ports:
-  - port: 80
+  - name: http
+    port: 80
     targetPort: 8080
   selector:
     app: store-front
-  type: LoadBalancer
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: store-front
+spec:
+  selector:
+    istio: aks-istio-ingressgateway-external
+  servers:
+    - port:
+        number: 80
+        name: http
+        protocol: HTTP
+      hosts:
+        - "*"
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: store-front
+spec:
+  hosts:
+    - "*"
+  gateways:
+    - store-front
+  http:
+    - route:
+        - destination:
+            host: store-front
+            port:
+              number: 80
