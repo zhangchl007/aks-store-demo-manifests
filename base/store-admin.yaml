@@ -1,30 +1,32 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: store-front
+  name: store-admin
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: store-front
+      app: store-admin
   template:
     metadata:
       labels:
-        app: store-front
+        app: store-admin
     spec:
       nodeSelector:
         "kubernetes.io/os": linux
       containers:
-      - name: store-front
-        image: ghcr.io/azure-samples/aks-store-demo/store-front:latest
+      - name: store-admin
+        image: ghcr.io/pauldotyu/aks-store-demo/store-admin:latest
         ports:
-        - containerPort: 8080
-          name: store-front
-        env: 
-        - name: VUE_APP_ORDER_SERVICE_URL
-          value: "http://order-service:3000/"
+        - containerPort: 8081
+          name: store-admin
+        env:
         - name: VUE_APP_PRODUCT_SERVICE_URL
           value: "http://product-service:3002/"
+        - name: VUE_APP_MAKELINE_SERVICE_URL
+          value: "http://makeline-service:3001/"
+        - name: VUE_APP_AI_SERVICE_URL
+          value: "http://ai-service:5001/"
         resources:
           requests:
             cpu: 1m
@@ -35,21 +37,21 @@ spec:
         startupProbe:
           httpGet:
             path: /health
-            port: 8080
+            port: 8081
           failureThreshold: 3
           initialDelaySeconds: 10
           periodSeconds: 5
         readinessProbe:
           httpGet:
             path: /health
-            port: 8080
+            port: 8081
           failureThreshold: 3
           initialDelaySeconds: 3
-          periodSeconds: 3
+          periodSeconds: 5
         livenessProbe:
           httpGet:
             path: /health
-            port: 8080
+            port: 8081
           failureThreshold: 5
           initialDelaySeconds: 3
           periodSeconds: 3
@@ -57,11 +59,11 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: store-front
+  name: store-admin
 spec:
   ports:
   - port: 80
-    targetPort: 8080
+    targetPort: 8081
   selector:
-    app: store-front
-  type: LoadBalancer
+    app: store-admin
+  type: LoadBalancer  
