@@ -16,7 +16,7 @@ spec:
         "kubernetes.io/os": linux
       containers:
       - name: store-admin
-        image: ghcr.io/azure-samples/aks-store-demo/store-admin:latest
+        image: ghcr.io/azure-samples/aks-store-demo/store-admin:1.0.0
         ports:
         - containerPort: 8081
           name: store-admin
@@ -61,9 +61,9 @@ kind: Service
 metadata:
   name: store-admin
 spec:
+  type: ClusterIP  
   ports:
   - port: 80
     targetPort: 8081
   selector:
     app: store-admin
-  type: LoadBalancer  

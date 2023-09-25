@@ -1,0 +1,36 @@
+# Default values for aks-store-demo.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+namespace: "dev"
+
+aiService:
+  # Specifies whether a ai-service deployment and service should be created
+  create: false
+  modelDeploymentName: ""
+  openAiEndpoint: ""
+  openAiKey: ""                # TODO: Implement this
+  managedIdentityClientId: ""
+  useAzureOpenAi: ""           # TODO: Implement this
+  useAzureAd: ""               # TODO: Implement this
+
+podAnnotations: {}
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
