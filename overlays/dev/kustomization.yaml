@@ -4,3 +4,7 @@ resources:
 - namespace.yaml
 - ../../base
 namespace: dev
+images:
+- name: ghcr.io/pauldotyu/aks-store-demo/store-front
+  newName: ghcr.io/pauldotyu/aks-store-demo/store-front # {"$imagepolicy": "flux-system:store-front:name"}
+  newTag: latest # {"$imagepolicy": "flux-system:store-front:tag"}
