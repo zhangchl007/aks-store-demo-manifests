@@ -8,7 +8,7 @@ spec:
   git:
     checkout:
       ref:
-        branch: istio # <-- change this to your branch
+        branch: flux-k8s-ext # <-- change this to your branch
     commit:
       author:
         email: fluxcdbot@users.noreply.github.com
@@ -17,7 +17,7 @@ spec:
   interval: 1m0s
   sourceRef:
     kind: GitRepository
-    name: aks-store-demo
+    name: aks-store-demo-manifests
   update:
     path: ./overlays/dev
     strategy: Setters
