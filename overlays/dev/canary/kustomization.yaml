@@ -3,4 +3,5 @@ kind: Kustomization
 resources:
 - store-front-canary.yaml
 - store-admin-canary.yaml
+- ai-service-canary.yaml
 namespace: dev

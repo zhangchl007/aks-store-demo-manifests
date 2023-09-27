@@ -3,3 +3,4 @@ kind: Kustomization
 resources:
 - store-front-image-update.yaml
 - store-admin-image-update.yaml
+- ai-service-image-update.yaml
