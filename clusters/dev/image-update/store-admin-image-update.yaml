@@ -1,0 +1,44 @@
+---
+apiVersion: image.toolkit.fluxcd.io/v1beta2
+kind: ImageRepository
+metadata:
+  name: store-admin
+  namespace: flux-system
+spec:
+  image: ghcr.io/pauldotyu/aks-store-demo/store-admin
+  interval: 1m0s
+---
+apiVersion: image.toolkit.fluxcd.io/v1beta2
+kind: ImagePolicy
+metadata:
+  name: store-admin
+  namespace: flux-system
+spec:
+  imageRepositoryRef:
+    name: store-admin
+  policy:
+    semver:
+      range: '>=1.0.0'
+---
+apiVersion: image.toolkit.fluxcd.io/v1beta1
+kind: ImageUpdateAutomation
+metadata:
+  name: store-admin
+  namespace: flux-system
+spec:
+  git:
+    checkout:
+      ref:
+        branch: london # <-- change this to your branch
+    commit:
+      author:
+        email: fluxcdbot@users.noreply.github.com
+        name: fluxcdbot
+      messageTemplate: '{{range .Updated.Images}}{{println .}}{{end}}'
+  interval: 1m0s
+  sourceRef:
+    kind: GitRepository
+    name: aks-store-demo-manifests
+  update:
+    path: ./overlays/dev
+    strategy: Setters
