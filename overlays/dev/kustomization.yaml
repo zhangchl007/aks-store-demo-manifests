@@ -1,13 +1,10 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
-
 resources:
 - namespace.yaml
 - ingressgateway.yaml
 - ../../base
-
 namespace: dev
-
 images:
 - name: ghcr.io/pauldotyu/aks-store-demo/store-front
   newName: ghcr.io/pauldotyu/aks-store-demo/store-front # {"$imagepolicy": "flux-system:store-front:name"}
@@ -15,6 +12,9 @@ images:
 - name: ghcr.io/pauldotyu/aks-store-demo/store-admin
   newName: ghcr.io/pauldotyu/aks-store-demo/store-admin # {"$imagepolicy": "flux-system:store-admin:name"}
   newTag: 1.0.0 # {"$imagepolicy": "flux-system:store-admin:tag"}
+- name: ghcr.io/pauldotyu/aks-store-demo/ai-service
+  newName: ghcr.io/pauldotyu/aks-store-demo/ai-service # {"$imagepolicy": "flux-system:ai-service:name"}
+  newTag: 1.0.0 # {"$imagepolicy": "flux-system:ai-service:tag"}
 patches:
 - patch: |-
     apiVersion: v1
@@ -27,4 +27,10 @@ patches:
     kind: Service
     metadata:
       name: store-admin
+    $patch: delete
+- patch: |-
+    apiVersion: v1
+    kind: Service
+    metadata:
+      name: ai-service
     $patch: delete

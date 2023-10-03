@@ -1,0 +1,53 @@
+---
+apiVersion: flagger.app/v1beta1
+kind: Canary
+metadata:
+  name: ai-service
+spec:
+  targetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: ai-service
+  progressDeadlineSeconds: 60
+  service:
+    port: 5001
+    targetPort: 5001
+    portDiscovery: true
+    hosts:
+      - "*"
+    gateways:
+      - aks-store-demo-internal
+    retries:
+      attempts: 5
+      perTryTimeout: 3s
+  analysis:
+    interval: 1m
+    threshold: 5
+    stepWeight: 10
+    maxWeight: 20
+    metrics:
+      - name: request-success-rate
+        thresholdRange:
+          min: 99
+        interval: 1m
+      - name: request-duration
+        thresholdRange:
+          max: 500
+        interval: 30s
+      - name: error-rate
+        thresholdRange:
+          max: 10
+        interval: 30s
+    webhooks:
+      - name: acceptance-test
+        type: pre-rollout
+        url: http://flagger-loadtester.dev/
+        timeout: 60s
+        metadata:
+          type: bash
+          cmd: "curl -s http://ai-service-canary.dev:5001/health"
+      - name: load-test
+        url: http://flagger-loadtester.dev/
+        timeout: 5s
+        metadata:
+          cmd: "hey -z 1m -q 10 -c 2 http://ai-service-canary.dev:5001/health"
