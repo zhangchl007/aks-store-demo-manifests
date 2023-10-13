@@ -1,0 +1,21 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: aks-store-demo
+  namespace: flux-system
+spec:
+  chart:
+    spec:
+      chart: aks-store-demo-chart
+      reconcileStrategy: ChartVersion
+      sourceRef:
+        kind: HelmRepository
+        name: aks-store-demo
+  install:
+    crds: Create
+    createNamespace: true
+  interval: 1m0s
+  targetNamespace: dev
+  upgrade:
+    crds: CreateReplace
