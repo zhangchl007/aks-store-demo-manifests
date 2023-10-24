@@ -16,7 +16,7 @@ spec:
         "kubernetes.io/os": linux
       containers:
       - name: product-service
-        image: ghcr.io/pauldotyu/aks-store-demo/product-service:latest
+        image: ghcr.io/pauldotyu/aks-store-demo/product-service:1.0.0
         ports:
         - containerPort: 3002
         resources:
@@ -25,7 +25,7 @@ spec:
             memory: 1Mi
           limits:
             cpu: 1m
-            memory: 6Mi
+            memory: 10Mi
         livenessProbe:
           httpGet:
             path: /health

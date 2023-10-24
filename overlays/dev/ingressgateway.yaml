@@ -2,10 +2,25 @@
 apiVersion: networking.istio.io/v1alpha3
 kind: Gateway
 metadata:
-  name: store-front
+  name: aks-store-demo-external
 spec:
   selector:
     istio: aks-istio-ingressgateway-external
+  servers:
+    - port:
+        number: 80
+        name: http
+        protocol: HTTP
+      hosts:
+        - "*"
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: aks-store-demo-internal
+spec:
+  selector:
+    istio: aks-istio-ingressgateway-internal
   servers:
     - port:
         number: 80
