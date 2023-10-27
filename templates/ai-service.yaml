@@ -21,7 +21,7 @@ kind: Deployment
 metadata:
   name: ai-service
 spec:
-  replicas: 1
+  replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
       app: ai-service
@@ -55,6 +55,15 @@ spec:
             port: 5001
           initialDelaySeconds: 60
           failureThreshold: 3
+          timeoutSeconds: 3
+          periodSeconds: 5
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 5001
+          initialDelaySeconds: 3
+          failureThreshold: 3
+          timeoutSeconds: 3
           periodSeconds: 5
         readinessProbe:
           httpGet:
@@ -67,8 +76,9 @@ spec:
           httpGet:
             path: /health
             port: 5001
+          failureThreshold: 3
           initialDelaySeconds: 3
-          failureThreshold: 5
+          timeoutSeconds: 3
           periodSeconds: 3
 ---
 apiVersion: v1

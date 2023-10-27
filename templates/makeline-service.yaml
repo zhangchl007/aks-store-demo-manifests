@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: makeline-service
 spec:
-  replicas: 1
+  replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
       app: makeline-service
