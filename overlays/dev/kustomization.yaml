@@ -8,7 +8,7 @@ namespace: dev
 images:
 - name: ghcr.io/pauldotyu/aks-store-demo/store-front
   newName: ghcr.io/pauldotyu/aks-store-demo/store-front # {"$imagepolicy": "flux-system:store-front:name"}
-  newTag: 1.0.0 # {"$imagepolicy": "flux-system:store-front:tag"}
+  newTag: 1.1.0 # {"$imagepolicy": "flux-system:store-front:tag"}
 patches:
 - patch: |-
     apiVersion: v1
