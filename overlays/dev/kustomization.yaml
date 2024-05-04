@@ -4,3 +4,82 @@ resources:
 - namespace.yaml
 - ../../base
 namespace: pets
+patches:
+# order-service
+- patch: |-
+    - op: add
+      path: "/spec/template/metadata/labels/azure.workload.identity~1use"
+      value: "true"
+  target:
+    kind: Deployment
+    name: order-service
+- patch: |-
+    - op: add
+      path: "/spec/template/spec/serviceAccount"
+      value: "${SB_CONNECTOR_SERVICEACCOUNT}"
+  target:
+    kind: Deployment
+    name: order-service
+- patch: |-
+    - op: remove
+      path: "/spec/template/spec/containers/0/env"
+    - op: add
+      path: "/spec/template/spec/containers/0/envFrom"
+      value:
+        - configMapRef:
+            name: order-service-configs
+  target:
+    kind: Deployment
+    name: order-service
+# makeline-service
+- patch: |-
+    - op: add
+      path: "/spec/template/metadata/labels/azure.workload.identity~1use"
+      value: "true"
+  target:
+    kind: Deployment
+    name: makeline-service
+- patch: |-
+    - op: add
+      path: "/spec/template/spec/serviceAccount"
+      value: "${DB_CONNECTOR_SERVICEACCOUNT}"
+  target:
+    kind: Deployment
+    name: makeline-service
+- patch: |-
+    - op: remove
+      path: "/spec/template/spec/containers/0/env"
+    - op: add
+      path: "/spec/template/spec/containers/0/envFrom"
+      value:
+        - configMapRef:
+            name: makeline-service-configs
+  target:
+    kind: Deployment
+    name: makeline-service
+# ai-service
+- patch: |-
+    - op: add
+      path: "/spec/template/metadata/labels/azure.workload.identity~1use"
+      value: "true"
+  target:
+    kind: Deployment
+    name: ai-service
+- patch: |-
+    - op: add
+      path: "/spec/template/spec/serviceAccount"
+      value: "${AI_CONNECTOR_SERVICEACCOUNT}"
+  target:
+    kind: Deployment
+    name: ai-service
+- patch: |-
+    - op: remove
+      path: "/spec/template/spec/containers/0/env"
+    - op: add
+      path: "/spec/template/spec/containers/0/envFrom"
+      value:
+        - configMapRef:
+            name: ai-service-configs
+  target:
+    kind: Deployment
+    name: ai-service
