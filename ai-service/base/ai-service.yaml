@@ -1,0 +1,68 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: ai-service
+  namespace: pets
+spec:
+  replicas: 10
+  strategy:
+    canary:
+      canaryService: ai-service-canary
+      stableService: ai-service-stable
+      trafficRouting:
+        plugins:
+          argoproj-labs/gatewayAPI:
+            httpRoute: ai-service
+            namespace: pets
+      steps:
+      - setWeight: 50
+      - pause: {}
+      - setWeight: 100
+      - pause: {}
+  revisionHistoryLimit: 2
+  selector:
+    matchLabels:
+      app: ai-service
+  template:
+    metadata:
+      labels:
+        app: ai-service
+        azure.workload.identity/use: "true"
+    spec:
+      serviceAccountName: ai-service-account
+      containers:
+        - name: ai-service
+          image: ghcr.io/pauldotyu/aks-store-demo/ai-service:1.2.0
+          ports:
+            - containerPort: 5001
+          envFrom:
+            - configMapRef:
+                name: ai-service-configs
+          resources:
+            requests:
+              cpu: 20m
+              memory: 50Mi
+            limits:
+              cpu: 50m
+              memory: 128Mi
+          startupProbe:
+            httpGet:
+              path: /health
+              port: 5001
+            initialDelaySeconds: 60
+            failureThreshold: 3
+            periodSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 5001
+            initialDelaySeconds: 3
+            failureThreshold: 10
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 5001
+            initialDelaySeconds: 3
+            failureThreshold: 10
+            periodSeconds: 10
