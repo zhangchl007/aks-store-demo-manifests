@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: store-admin
 spec:
-  replicas: 1
+  replicas: 3
   selector:
     matchLabels:
       app: store-admin
@@ -16,7 +16,7 @@ spec:
         "kubernetes.io/os": linux
       containers:
       - name: store-admin
-        image: ghcr.io/azure-samples/aks-store-demo/store-admin:1.1.0
+        image: ghcr.io/pauldotyu/aks-store-demo/store-admin:latest
         ports:
         - containerPort: 8081
           name: store-admin
@@ -25,8 +25,6 @@ spec:
           value: "http://product-service:3002/"
         - name: VUE_APP_MAKELINE_SERVICE_URL
           value: "http://makeline-service:3001/"
-        - name: VUE_APP_AI_SERVICE_URL
-          value: "http://ai-service:5001/"
         resources:
           requests:
             cpu: 1m
@@ -66,4 +64,32 @@ spec:
     targetPort: 8081
   selector:
     app: store-admin
-  type: LoadBalancer  
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: store-admin
+spec:
+  parentRefs:
+  - name: gateway-external
+    namespace: aks-istio-ingress
+  hostnames: ["admin.aks.rocks"]
+  rules:
+  - matches:
+    - path:
+        type: PathPrefix
+        value: /
+    backendRefs:
+    - name: store-admin
+      port: 80
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: store-admin
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app: store-admin
+  unhealthyPodEvictionPolicy: AlwaysAllow

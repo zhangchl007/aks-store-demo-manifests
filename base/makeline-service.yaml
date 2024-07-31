@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: makeline-service
 spec:
-  replicas: 1
+  replicas: 3
   selector:
     matchLabels:
       app: makeline-service
@@ -11,29 +11,19 @@ spec:
     metadata:
       labels:
         app: makeline-service
+        azure.workload.identity/use: "true"
     spec:
+      serviceAccountName: makeline-service-account
       nodeSelector:
         "kubernetes.io/os": linux
       containers:
       - name: makeline-service
-        image: ghcr.io/azure-samples/aks-store-demo/makeline-service:1.1.0
+        image: ghcr.io/pauldotyu/aks-store-demo/makeline-service:latest
         ports:
         - containerPort: 3001
-        env:
-        - name: ORDER_QUEUE_URI
-          value: "amqp://rabbitmq:5672"
-        - name: ORDER_QUEUE_USERNAME
-          value: "username"
-        - name: ORDER_QUEUE_PASSWORD
-          value: "password"
-        - name: ORDER_QUEUE_NAME
-          value: "orders"
-        - name: ORDER_DB_URI
-          value: "mongodb://mongodb:27017"
-        - name: ORDER_DB_NAME
-          value: "orderdb"
-        - name: ORDER_DB_COLLECTION_NAME
-          value: "orders"
+        envFrom:
+        - configMapRef:
+            name: makeline-service-configs
         resources:
           requests:
             cpu: 1m
@@ -61,10 +51,20 @@ kind: Service
 metadata:
   name: makeline-service
 spec:
-  type: ClusterIP
   ports:
   - name: http
     port: 3001
     targetPort: 3001
   selector:
     app: makeline-service
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: makeline-service
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app: makeline-service
+  unhealthyPodEvictionPolicy: AlwaysAllow

@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: order-service
 spec:
-  replicas: 1
+  replicas: 3
   selector:
     matchLabels:
       app: order-service
@@ -11,7 +11,9 @@ spec:
     metadata:
       labels:
         app: order-service
+        azure.workload.identity/use: "true"
     spec:
+      serviceAccountName: order-service-account
       nodeSelector:
         "kubernetes.io/os": linux
       containers:
@@ -19,19 +21,9 @@ spec:
         image: ghcr.io/pauldotyu/aks-store-demo/order-service:latest
         ports:
         - containerPort: 3000
-        env:
-        - name: ORDER_QUEUE_HOSTNAME
-          value: "rabbitmq"
-        - name: ORDER_QUEUE_PORT
-          value: "5672"
-        - name: ORDER_QUEUE_USERNAME
-          value: "username"
-        - name: ORDER_QUEUE_PASSWORD
-          value: "password"
-        - name: ORDER_QUEUE_NAME
-          value: "orders"
-        - name: FASTIFY_ADDRESS
-          value: "0.0.0.0"
+        envFrom:
+        - configMapRef:
+            name: order-service-configs
         resources:
           requests:
             cpu: 1m
@@ -60,27 +52,26 @@ spec:
           failureThreshold: 5
           initialDelaySeconds: 3
           periodSeconds: 3
-      initContainers:
-      - name: wait-for-rabbitmq
-        image: busybox
-        command: ['sh', '-c', 'until nc -zv rabbitmq 5672; do echo waiting for rabbitmq; sleep 2; done;']
-        resources:
-          requests:
-            cpu: 1m
-            memory: 50Mi
-          limits:
-            cpu: 75m
-            memory: 128Mi
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: order-service
 spec:
-  type: ClusterIP
   ports:
   - name: http
     port: 3000
     targetPort: 3000
   selector:
     app: order-service
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: order-service
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app: order-service
+  unhealthyPodEvictionPolicy: AlwaysAllow

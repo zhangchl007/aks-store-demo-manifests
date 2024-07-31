@@ -16,12 +16,12 @@ spec:
         "kubernetes.io/os": linux
       containers:
       - name: virtual-customer
-        image: ghcr.io/azure-samples/aks-store-demo/virtual-customer:1.1.0
+        image: ghcr.io/pauldotyu/aks-store-demo/virtual-customer:latest
         env:
         - name: ORDER_SERVICE_URL
           value: http://order-service:3000/
         - name: ORDERS_PER_HOUR
-          value: "100"
+          value: "500"
         resources:
           requests:
             cpu: 1m
