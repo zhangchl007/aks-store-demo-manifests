@@ -61,7 +61,6 @@ kind: Service
 metadata:
   name: makeline-service
 spec:
-  type: ClusterIP
   ports:
   - name: http
     port: 3001
