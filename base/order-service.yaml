@@ -16,7 +16,7 @@ spec:
         "kubernetes.io/os": linux
       containers:
       - name: order-service
-        image: ghcr.io/pauldotyu/aks-store-demo/order-service:latest
+        image: ghcr.io/azure-samples/aks-store-demo/order-service:latest
         ports:
         - containerPort: 3000
         env:
@@ -37,14 +37,14 @@ spec:
             cpu: 1m
             memory: 50Mi
           limits:
-            cpu: 75m
+            cpu: "1"
             memory: 128Mi
         startupProbe:
           httpGet:
             path: /health
             port: 3000
           failureThreshold: 3
-          initialDelaySeconds: 10
+          initialDelaySeconds: 20
           periodSeconds: 5
         readinessProbe:
           httpGet:

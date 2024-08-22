@@ -16,9 +16,12 @@ spec:
         "kubernetes.io/os": linux
       containers:
       - name: product-service
-        image: ghcr.io/pauldotyu/aks-store-demo/product-service:latest
+        image: ghcr.io/azure-samples/aks-store-demo/product-service:latest
         ports:
         - containerPort: 3002
+        env:
+        - name: AI_SERVICE_URL
+          value: "http://ai-service:5001/"
         resources:
           requests:
             cpu: 1m
