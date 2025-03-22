@@ -3,6 +3,6 @@ kind: Kustomization
 resources:
 - namespace.yaml
 - ./../../base
-namespace: dev
+namespace: store-dev
 patchesStrategicMerge:
 - replica-patch.yaml
